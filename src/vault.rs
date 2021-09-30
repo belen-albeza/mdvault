@@ -1,11 +1,5 @@
-use std::path::{Path, PathBuf};
-
-/// A `Note` representing a file within the `Vault` file tree.
-#[derive(Debug, PartialEq)]
-pub struct Note {
-    file_path: PathBuf,
-    src_path: PathBuf,
-}
+use crate::note::Note;
+use std::path::Path;
 
 /// A `Vault` containing all the notes in the file tree.
 #[derive(Debug, PartialEq)]
@@ -22,10 +16,12 @@ impl Vault {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use assert_fs::TempDir;
 
     #[test]
-    fn creates_a_vault_from_the_source_dir() {
-        let vault = Vault::new(&PathBuf::from("."));
+    fn creates_a_vault_from_empty_source_dir() {
+        let source = TempDir::new().expect("Could not create temporary dir");
+        let vault = Vault::new(&source);
         assert_eq!(vault, Vault { notes: vec![] })
     }
 }
