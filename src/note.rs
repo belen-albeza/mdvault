@@ -8,6 +8,13 @@ pub struct Note {
 }
 
 impl Note {
+    pub fn new(base: &Path, file: &Path) -> Self {
+        Self {
+            base_path: base.to_path_buf(),
+            file_path: file.to_path_buf(),
+        }
+    }
+
     /// Returns the absolute path of the note
     pub fn abs_path(&self) -> &Path {
         self.file_path.as_path()
@@ -24,6 +31,18 @@ impl Note {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn constructs_a_note_from_paths() {
+        let note = Note::new(&PathBuf::from("/foo/"), &PathBuf::from("/foo/index.md"));
+        assert_eq!(
+            note,
+            Note {
+                base_path: PathBuf::from("/foo/"),
+                file_path: PathBuf::from("/foo/index.md")
+            }
+        );
+    }
 
     #[test]
     fn abs_path_returns_the_full_path() {
