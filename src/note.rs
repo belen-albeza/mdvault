@@ -8,6 +8,7 @@ pub struct Note {
 }
 
 impl Note {
+    /// Creates a new `Note` with the given base and file `Path`s.
     pub fn new(base: &Path, file: &Path) -> Self {
         Self {
             base_path: base.to_path_buf(),

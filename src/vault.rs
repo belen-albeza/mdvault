@@ -11,6 +11,7 @@ pub struct Vault {
 }
 
 impl Vault {
+    /// Creates a new `Vault` from a given base `Path`.
     pub fn new(base: &Path) -> Self {
         let walker = Walk::new(base);
         Self {
