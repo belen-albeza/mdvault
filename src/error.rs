@@ -7,4 +7,6 @@ pub enum Error {
     NotANote(PathBuf),
     #[error("invalid base path `{0}` for file `{1}`")]
     InvalidBasePath(PathBuf, PathBuf),
+    #[error("path does not exist: {0}")]
+    PathDoesNotExist(PathBuf),
 }

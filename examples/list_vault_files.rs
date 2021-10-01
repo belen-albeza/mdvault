@@ -2,7 +2,7 @@ use mdvault::Vault;
 use std::path::PathBuf;
 
 fn main() {
-    let vault = Vault::new(&PathBuf::from("tests/fixtures/basic"));
+    let vault = Vault::open(&PathBuf::from("tests/fixtures/basic")).unwrap();
     println!("Vault at {:?}", vault.base_path);
     println!("Notes ({}):", vault.notes.len());
     for note in vault.notes {

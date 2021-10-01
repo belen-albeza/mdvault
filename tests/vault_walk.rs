@@ -21,7 +21,7 @@ fn is_there_asset_with_rel_path(assets: &[Asset], path_str: &str) -> bool {
 #[test]
 fn vault_scans_file_tree_on_creation() {
     let base_path = PathBuf::from("tests/fixtures/basic");
-    let vault = Vault::new(&base_path);
+    let vault = Vault::open(&base_path).unwrap();
 
     assert_eq!(vault.base_path, base_path);
     assert_eq!(vault.notes.len(), 2);
@@ -35,7 +35,7 @@ fn vault_scans_file_tree_on_creation() {
 #[test]
 fn vault_does_not_contain_notes_of_ignored_files() {
     let base_path = PathBuf::from("tests/fixtures/ignore");
-    let vault = Vault::new(&base_path);
+    let vault = Vault::open(&base_path).unwrap();
 
     assert_eq!(vault.base_path, base_path);
     assert_eq!(vault.notes.len(), 1);

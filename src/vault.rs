@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use crate::asset::Asset;
+use crate::error::Error;
 use crate::file;
 use crate::note::Note;
 
@@ -13,9 +14,14 @@ pub struct Vault {
 }
 
 impl Vault {
-    /// Creates a new `Vault` from a given base `Path`.
-    pub fn new(base: &Path) -> Self {
-        Self {
+    /// Creates a new `Vault` from a given base Path. Yields error if the
+    /// path does not exist.
+    pub fn open(base: &Path) -> Result<Self, Error> {
+        if !base.is_dir() {
+            return Err(Error::PathDoesNotExist(base.to_path_buf()));
+        }
+
+        Ok(Self {
             base_path: base.to_path_buf(),
             notes: file::walk(base, file::has_markdown_extension)
                 .into_iter()
@@ -25,7 +31,7 @@ impl Vault {
                 .into_iter()
                 .map(|entry_path| Asset::new(base, &entry_path))
                 .collect(),
-        }
+        })
     }
 }
 
@@ -36,9 +42,16 @@ mod tests {
     use assert_fs::TempDir;
 
     #[test]
-    fn creates_a_vault_from_empty_dir() {
+    fn returns_error_when_opening_a_non_existing_dir() {
+        let path = PathBuf::from("lorem");
+        let vault_result = Vault::open(&path);
+        assert_eq!(vault_result, Err(Error::PathDoesNotExist(path)));
+    }
+
+    #[test]
+    fn opens_a_vault_from_empty_dir() {
         let temp_dir = TempDir::new().expect("Could not create temporary dir");
-        let vault = Vault::new(temp_dir.path());
+        let vault = Vault::open(temp_dir.path()).unwrap();
 
         assert_eq!(
             vault,
@@ -53,7 +66,7 @@ mod tests {
     }
 
     #[test]
-    fn creates_a_vault_from_non_empty_dir() {
+    fn opens_a_vault_from_non_empty_dir() {
         let temp_dir = TempDir::new().expect("Could not create temporary dir");
         temp_dir
             .child("foo.md")
@@ -68,7 +81,7 @@ mod tests {
             .touch()
             .expect("Could not create temporary file");
 
-        let vault = Vault::new(temp_dir.path());
+        let vault = Vault::open(temp_dir.path()).unwrap();
 
         assert_eq!(vault.base_path, temp_dir.path().to_path_buf());
         assert_eq!(vault.notes.len(), 2);
